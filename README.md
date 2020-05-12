@@ -8,7 +8,7 @@ This project was realized as part of the *Deep learning* course given by Profess
 
 ## Language
 
-The different models have been implemented in *python* (version 3) via the [PyTorch](https://pytorch.org) library.
+The different models have been implemented in **python** (version 3) via the [PyTorch](https://pytorch.org) library.
 
 ## Authors
 
