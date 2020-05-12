@@ -1,0 +1,15 @@
+name: neural_style_transfer
+channels:
+  - defaults
+dependencies:
+  - cpuonly
+  - jupyter
+  - scipy
+  - python=3
+  - matplotlib
+  - torchvision
+  - scikit-learn
+  - numpy
+  - pytorch
+  - pillow
+  - nltk
