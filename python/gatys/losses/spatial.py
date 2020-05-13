@@ -15,6 +15,7 @@ Authors :
 # Imports #
 ###########
 
+# Neural networks with PyTorch
 import torch
 import torch.nn as nn
 
@@ -41,8 +42,15 @@ def guided(input, guidance_channels):
     return fr
 
 
-def gram_matrix(input):
-    return torch.mm(input, input.t())
+def gram_matrix(tensor):
+    """Computes and returns the Gram matrix obtained from tensor."""
+
+    # Computing the matrix via inner products
+    gram = torch.mm(tensor, tensor.t())
+
+    # Normalize values of the Gram matrix by dividing by the
+    # number of elements in each feature maps
+    return gram.div(batch_size * number_maps * h * w)
 
 
 ###########
@@ -93,12 +101,10 @@ class StyleLoss(nn.Module):
         Computes the loss and returns the input tensor x.
         """
 
-        a, b, c, d = x.size()
+        # Compute the Gram matrix
+        gram = gram_matrix(x)
 
-        self.loss = functional.mse_loss(
-            input=gram_matrix(x),
-            target=self.gram_reference
-        )
-        self.loss /= (2 * b ** 2 * (c * d) ** 2)
+        # Compute the loss
+        self.loss = functional.mse_loss(gram, self.gram_reference)
 
         return x

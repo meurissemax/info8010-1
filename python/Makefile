@@ -22,6 +22,4 @@ env: environment.yml
 
 # Clean the workspace
 clean:
-	@rm -f -r __pycache__/
-	@rm -f -r **/__pycache__/
-	@rm -f -r **/**/__pycache__/
+	@find . | grep -E '(__pycache__|\.pyc|\.pyo)' | xargs rm -rf

@@ -17,10 +17,14 @@ Authors :
 
 import copy
 
+# Neural networks with PyTorch
 import torch
 import torch.nn as nn
 
+# To update the loss ration during process
 from torch.optim.lr_scheduler import StepLR
+
+# Losses and image optimizer
 from gatys.losses.initial import ContentLoss, StyleLoss
 from gatys.images import img_optimizer
 
@@ -85,7 +89,7 @@ def add_modules(mod, mean, std, img, layers, device):
         if isinstance(m, ContentLoss) or isinstance(m, StyleLoss):
             break
 
-    model = model[:(i+1)]
+    model = model[:(i + 1)]
 
     return model, {'style': style_losses, 'content': content_losses}
 
@@ -114,13 +118,14 @@ def run(model, img, num_steps, weights, losses):
             # Reset the gradients to zero before the backprop
             optimizer.zero_grad()
             model(img['input'])
-            style_score = content_score = 0
+            style_score = 0
+            content_score = 0
 
-            for i, loss in enumerate(losses['style']):
-                style_score += loss.loss * weights['style_losses'][i]
+            for loss, weight in zip(losses['style'], weights['style_losses']):
+                style_score += loss.loss * weight
 
-            for i, loss in enumerate(losses['content']):
-                content_score += loss.loss * weights['content_losses'][i]
+            for loss, weight in zip(losses['content'], weights['content_losses']):
+                content_score += loss.loss * weight
 
             style_score *= weights['style']
             content_score *= weights['content']
@@ -133,8 +138,12 @@ def run(model, img, num_steps, weights, losses):
 
             run[0] += 1
 
-            step = int((run[0] / num_steps) * 50)
-            print('[{}{}]'.format('=' * step, ' ' * (50 - step)), end='\r')
+            step = int((run[0] / (num_steps)) * 50)
+            print('[Progress : {}/{}] [{}{}]'.format(
+                str(run[0]).rjust(len(str((num_steps)))),
+                (num_steps),
+                '=' * step, ' ' * (50 - step)
+            ), end='\r')
 
             return content_score + style_score
 

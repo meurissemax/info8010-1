@@ -19,89 +19,122 @@ from __future__ import print_function
 
 import os
 
+# Neural networks with PyTorch
 import torch
+
+# Train or load pre-trained models
 import torchvision.models as models
 
 from gatys.images import img_save, img_load, img_optimizer
 from gatys.process import add_modules, run
 
 
-#####################
-# General variables #
-#####################
+###########
+# Classes #
+###########
 
-# Hyperparameters
-img_size = 512 if torch.cuda.is_available() else 128
-num_steps = 500
+class Gatys:
+    ###############
+    # Constructor #
+    ###############
 
-weights = {
-    'style': 1_000_000,
-    'content': 10,
-    'style_losses': [1] * 5,
-    'content_losses': [1]
-}
+    def __init__(self):
+        # Print general information
+        print('Gatys et al. algorithm')
+        print('----------------------')
+        print()
 
-# Layers over which the losses are computed
-layers = {
-    'content': ['conv_4'],
-    'style': ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5']
-}
+        ###################
+        # Hyperparameters #
+        ###################
 
+        self.model_name = 'vgg19'
 
-#############
-# Functions #
-#############
+        # Desired size of the ouput image (depending on GPU availability)
+        self.img_size = 512 if torch.cuda.is_available() else 128
 
-def gatys(style_path, content_path, output_path, graph):
-    # Print general information
-    print('Gatys et al. algorithm')
-    print('----------------------')
-    print()
-    print('Initialization...')
+        # Number of steps
+        self.num_steps = 200
 
-    # Set the device
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        # Weights
+        self.weights = {
+            'style': 1_000_000,
+            'content': 10,
+            'style_losses': [1] * 5,
+            'content_losses': [1]
+        }
 
-    # Loads the model (only the features part, we don't need
-    # the classifier) and put it in evaluation mode
-    model = models.vgg19(pretrained=False).features.to(device).eval()
+        # Layers over which the losses are computed
+        self.layers = {
+            'content': ['conv_4'],
+            'style': ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5']
+        }
 
-    # Set the norm
-    norm_mean = torch.tensor([0.485, 0.456, 0.406]).to(device)
-    norm_std = torch.tensor([0.229, 0.224, 0.225]).to(device)
+    ####################
+    # Public functions #
+    ####################
 
-    # Load the images
-    img = {
-        'style': img_load(style_path, img_size, device),
-        'content': img_load(content_path, img_size, device)
-    }
+    def initialize(self):
+        # Print general information
+        print('Initialization...')
 
-    img['input'] = torch.randn(img['content'].data.size(), device=device)
+        # Set the device (check if GPU are available, else use CPU)
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    # Add our loss and normalization modules in the model
-    style_model, losses = add_modules(
-        model,
-        norm_mean,
-        norm_std,
-        img,
-        layers,
-        device
-    )
+        # Loads the model (only the features part, we don't need
+        # the classifier) and put it in evaluation mode
+        self.model = getattr(models, self.model_name)(pretrained=False).features.to(self.device).eval()
 
-    # Run the algorithm
-    print('Running the algorithm...')
-    output, style_scores, content_scores = run(style_model, img, num_steps, weights, losses)
-    print()
-    print('The algorithm was executed successfully !')
+        # Set the normalization factor (to normalize the image before sending it into the network)
+        self.norm_mean = torch.tensor([0.485, 0.456, 0.406]).to(self.device)
+        self.norm_std = torch.tensor([0.229, 0.224, 0.225]).to(self.device)
 
-    # Save the result
-    img_save(output, output_path)
-    graph(
-        list(range(1, len(style_scores) + 1)),
-        [style_scores, content_scores],
-        'Number of steps',
-        'Loss',
-        ['Style', 'Content'],
-        os.path.splitext(output_path)[0] + '.pdf'
-    )
-    print('Result saved as {}'.format(output_path))
+    def run(self, style_path, content_path):
+        # Print general information
+        print('Loading images...')
+
+        # Load the images and check if they have same dimensions
+        self.img = {
+            'style': img_load(style_path, self.img_size, self.device),
+            'content': img_load(content_path, self.img_size, self.device)
+        }
+
+        # Create the input image (content image with white noise)
+        self.img['input'] = torch.randn(self.img['content'].data.size(), device=self.device)
+
+        # Add our loss and normalization modules in the model
+        self.style_model, self.losses = add_modules(
+            self.model,
+            self.norm_mean,
+            self.norm_std,
+            self.img,
+            self.layers,
+            self.device
+        )
+
+        # Print general information
+        print('Running the algorithm (device : {})...'.format(self.device))
+
+        # Run the algorithm
+        self.output, self.style_scores, self.content_scores = run(self.style_model, self.img, self.num_steps, self.weights, self.losses)
+
+        # Print general information
+        print()
+        print('The algorithm was executed successfully !')
+
+    def export(self, output_path, graph):
+        # Save the image
+        img_save(self.output, output_path)
+
+        # Plot and save a graph with losses evolution
+        graph(
+            list(range(1, len(self.style_scores) + 1)),
+            [self.style_scores, self.content_scores],
+            'Number of steps',
+            'Loss',
+            ['Style', 'Content'],
+            os.path.splitext(output_path)[0] + '.pdf'
+        )
+
+        # Print general information
+        print('Result saved as {}'.format(output_path))
