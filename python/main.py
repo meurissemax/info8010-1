@@ -15,9 +15,11 @@ Authors :
 # Imports #
 ###########
 
-from graph import line_graph
+# Algorithms
+from gatys.gatys import Gatys
 
-from gatys.gatys import gatys
+# Function to make plots
+from graph import line_graph as graph
 
 
 #####################
@@ -25,9 +27,9 @@ from gatys.gatys import gatys
 #####################
 
 # Gatys et al.
-style_path = '../resources/images/style/picasso.png'
-content_path = '../resources/images/content/eiffel-tower.png'
-output_path = 'outputs/gatys/picasso-eiffel.png'
+style = '../resources/images/style/starry-night.png'
+content = '../resources/images/content/eiffel-tower.png'
+output = 'outputs/gatys/starry-night-eiffel-tower.png'
 
 
 ########
@@ -35,11 +37,22 @@ output_path = 'outputs/gatys/picasso-eiffel.png'
 ########
 
 if __name__ == '__main__':
-    # Print general information
-    print('-------------------------------------------------')
-    print('| Deep learning project - Neural style transfer |')
-    print('-------------------------------------------------')
+    #######################
+    # General information #
+    #######################
+
+    print('#################################################')
+    print('# Deep learning project - Neural style transfer #')
+    print('#################################################')
     print()
 
-    # Run Gatys et al. algorithm
-    gatys(style_path, content_path, output_path, line_graph)
+    ##########################
+    # Gatys et al. algorithm #
+    ##########################
+
+    g = Gatys()
+
+    g.initialize()
+
+    g.run(style, content)
+    g.export(output, graph)
