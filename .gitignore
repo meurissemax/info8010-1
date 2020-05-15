@@ -7,6 +7,14 @@
 
 
 ##########
+# Remote #
+##########
+
+# SFTP (Sublime Text)
+sftp-config.json
+
+
+##########
 # Python #
 ##########
 
