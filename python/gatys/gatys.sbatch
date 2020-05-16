@@ -12,7 +12,7 @@
 #
 
 # Activate the anaconda environnement
-source miniconda3/etc/profile.d/conda.sh
+source /home/mmeurisse/miniconda3/etc/profile.d/conda.sh
 conda activate neural_style_transfer
 
 # Run the script
