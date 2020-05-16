@@ -11,10 +11,6 @@ Authors :
     - Valentin Vermeylen
 """
 
-# These classes implement the style and content losses
-# required to perform neural style transfer. They are
-# implemented from the original paper.
-
 ###########
 # Imports #
 ###########
