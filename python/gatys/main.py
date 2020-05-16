@@ -44,7 +44,7 @@ output_path = 'outputs/'
 
 # Hyperparameters of the technique
 model_name = 'vgg19'
-num_steps = 1000
+num_steps = 500
 
 weights = {
     'style': 1_000_000,

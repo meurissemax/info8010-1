@@ -126,6 +126,7 @@ def run(model, img, num_steps, weights, losses):
             # Reset the gradients to zero before the backpropagation
             optimizer.zero_grad()
             model(img['input'])
+
             style_score = 0
             content_score = 0
 

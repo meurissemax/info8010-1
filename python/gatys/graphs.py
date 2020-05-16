@@ -17,16 +17,6 @@ Authors :
 
 import matplotlib.pyplot as plt
 
-from matplotlib import rc
-
-
-############
-# Settings #
-############
-
-# LaTeX font style
-rc('text', usetex=True)
-
 
 #############
 # Functions #
