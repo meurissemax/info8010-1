@@ -9,17 +9,43 @@
 #     - Adrien Schoffeniels
 #     - Valentin Vermeylen
 
-# Run the main script
-main:
-	python main.py
+##############
+# Techniques #
+##############
+
+# Run the Gatys et al. technique
+gatys:
+	python gatys/main.py
+
+# Run the Cycle GAN technique
+cycle-gan:
+	python cycle-gan/main.py
+
+
+###############
+# Environment #
+###############
 
 # Create the anaconda environment
-env: environment.yml
+create-env:
 	conda env create -f environment.yml
+
+# Activate the anaconda environment
+activate-env:
+	conda activate neural_style_transfer
+
+# Deactivate the anaconda environment
+deactivate-env:
+	conda deactivate
+
+
+############
+# Cleaning #
+############
 
 # Phony
 .PHONY: clean
 
-# Clean the workspace
+# Delete python residus
 clean:
 	@find . | grep -E '(__pycache__|\.pyc|\.pyo)' | xargs rm -rf

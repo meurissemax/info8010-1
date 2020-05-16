@@ -21,12 +21,14 @@ import copy
 import torch
 import torch.nn as nn
 
+# Efficient gradient descents
+import torch.optim as optim
+
 # To update the loss ration during process
 from torch.optim.lr_scheduler import StepLR
 
 # Losses and image optimizer
-from gatys.losses.initial import ContentLoss, StyleLoss
-from gatys.images import img_optimizer
+from losses import ContentLoss, StyleLoss
 
 
 #############
@@ -34,7 +36,9 @@ from gatys.images import img_optimizer
 #############
 
 def add_modules(mod, mean, std, img, layers, device):
-    """Modifies the model to integrate new modules."""
+    """
+    Modifiy the model to integrate new modules.
+    """
 
     cnn_copy = copy.deepcopy(mod)
     norm_module = Normalization(mean, std).to(device)
@@ -95,8 +99,12 @@ def add_modules(mod, mean, std, img, layers, device):
 
 
 def run(model, img, num_steps, weights, losses):
+    """
+    Run the Gatys et al. algorithm.
+    """
+
     # Adds the input image to the gradient descent
-    optimizer = img_optimizer(img['input'])
+    optimizer = optim.LBFGS([img['input'].requires_grad_()])
 
     # Set a decaying learning rate
     scheduler = StepLR(optimizer, step_size=50, gamma=0.3)
@@ -115,7 +123,7 @@ def run(model, img, num_steps, weights, losses):
             # Limits the values of the updates image
             img['input'].data.clamp_(0, 1)
 
-            # Reset the gradients to zero before the backprop
+            # Reset the gradients to zero before the backpropagation
             optimizer.zero_grad()
             model(img['input'])
             style_score = 0

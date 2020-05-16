@@ -18,9 +18,6 @@ Authors :
 # Neural networks with PyTorch
 import torch
 
-# Efficient gradient descents
-import torch.optim as optim
-
 # Transform PIL images into tensors
 import torchvision.transforms as transforms
 
@@ -32,24 +29,11 @@ from PIL import Image
 # Functions #
 #############
 
-def img_save(tensor, path):
-    """Save an image."""
-
-    # We clone the tensor to not do changes on it
-    img = tensor.cpu().clone()
-
-    # Remove the fake batch dimension
-    img = img.squeeze(0)
-
-    # Transform the copied tensor to PIL image
-    img = transforms.ToPILImage()(img)
-
-    # Save the image
-    img.save(path)
-
-
-def img_load(name, size, device):
-    """Load an image."""
+def img_load(path, size, device):
+    """
+    Load an image from path, resize it, transform it
+    to tensor and send it to device.
+    """
 
     # Create a transformation to transform a PIL image
     # (represented by values between 0 and 255) into a
@@ -59,7 +43,8 @@ def img_load(name, size, device):
         transforms.ToTensor()
     ])
 
-    img = Image.open(name)
+    # Open the image
+    img = Image.open(path)
 
     # Fake batch dimension required to fit network's input dimensions
     img = loader(img).unsqueeze(0)
@@ -72,11 +57,20 @@ def img_load(name, size, device):
     return img.to(device, torch.float)
 
 
-def img_optimizer(img):
-    """Provide an optimizer for the gradient descent."""
+def img_save(tensor, path):
+    """
+    Take as input a tensor representing an image,
+    convert it to a PIL image and save it to path.
+    """
 
-    # Read https://pytorch.org/docs/stable/notes/autograd.html
-    # Must be part of the gradient descent since we are creating
-    # this image iteratively
+    # We clone the tensor to not do changes on it
+    img = tensor.cpu().clone()
 
-    return optim.LBFGS([img.requires_grad_()])
+    # Remove the fake batch dimension
+    img = img.squeeze(0)
+
+    # Transform the copied tensor to PIL image
+    img = transforms.ToPILImage()(img)
+
+    # Save the image
+    img.save(path)
