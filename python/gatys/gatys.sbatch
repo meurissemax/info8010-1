@@ -2,12 +2,12 @@
 #
 # Slurm arguments
 #
-#SBATCH --job-name=mmeurisse-gatys     # Name of the job 
+#SBATCH --job-name=gatys               # Name of the job 
 #SBATCH --export=ALL                   # Export all environment variables
 #SBATCH --output=mmeurisse-gatys.log   # Log-file (important!)
-#SBATCH --cpus-per-task=2              # Number of CPU cores to allocate
-#SBATCH --mem-per-cpu=4G               # Memory to allocate per allocated CPU core
-#SBATCH --gres=gpu:1                   # Number of GPU's
+#SBATCH --gres=gpu:1                   # Number of GPU's (per node)
+#SBATCH --cpus-per-task=2              # CPU cores/threads
+#SBATCH --mem=16G                      # Memory (per node)
 #SBATCH --time=1:00:00                 # Max execution time
 #
 
@@ -16,5 +16,5 @@ source /home/mmeurisse/miniconda3/etc/profile.d/conda.sh
 conda activate neural_style_transfer
 
 # Run the script
-cd /home/mmeurisse/info8010-1/python/gatys/
+cd /home/mmeurisse/info8010-1/gatys/
 python main.py
