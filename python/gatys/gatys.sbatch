@@ -8,7 +8,7 @@
 #SBATCH --gres=gpu:1                   # Number of GPU's (per node)
 #SBATCH --cpus-per-task=2              # CPU cores/threads
 #SBATCH --mem=16G                      # Memory (per node)
-#SBATCH --time=10:00:00                # Max execution time
+#SBATCH --time=2:00:00                 # Max execution time
 #
 
 # Activate the anaconda environnement
