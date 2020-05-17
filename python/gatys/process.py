@@ -17,17 +17,12 @@ Authors :
 
 import copy
 
-# Neural networks with PyTorch
 import torch
 import torch.nn as nn
-
-# Efficient gradient descents
 import torch.optim as optim
 
-# To update the loss ration during process
 from torch.optim.lr_scheduler import StepLR
 
-# Losses and image optimizer
 from losses import ContentLoss, StyleLoss
 
 
@@ -35,18 +30,26 @@ from losses import ContentLoss, StyleLoss
 # Functions #
 #############
 
-def add_modules(mod, mean, std, img, layers, device):
+def add_modules(cnn, mean, std, img, layers, device, replace=False):
     """
     Modifiy the model to integrate new modules.
     """
 
-    cnn_copy = copy.deepcopy(mod)
-    norm_module = Normalization(mean, std).to(device)
-    model = nn.Sequential(norm_module)
+    # Copy the CNN
+    cnn_copy = copy.deepcopy(cnn)
 
+    # Create the normalization module
+    norm_module = Normalization(mean, std).to(device)
+
+    # Initializes losses lists
     content_losses = []
     style_losses = []
 
+    # Create the new model with the normalization module
+    # (in order to normalize input images)
+    model = nn.Sequential(norm_module)
+
+    # Iterate over each layer of the CNN
     i = 0
 
     for layer in cnn_copy.children():
@@ -59,15 +62,15 @@ def add_modules(mod, mean, std, img, layers, device):
 
             name = 'relu_{}'.format(i)
         elif isinstance(layer, nn.MaxPool2d):
+            # We replace 'MaxPool' layer by 'AvgPool' layer, as suggested by the author
+            if replace:
+                layer = nn.AvgPool2d(2, 2)
+
             name = 'pool_{}'.format(i)
         elif isinstance(layer, nn.BatchNorm2d):
             name = 'bn_{}'.format(i)
         else:
-            raise RuntimeError(
-                'Unrecognized layer : {}'.format(
-                    layer.__class__.__name__
-                )
-            )
+            raise RuntimeError('Unrecognized layer : {}'.format(layer.__class__.__name__))
 
         # Add the layer to our model
         model.add_module(name, layer)
@@ -98,7 +101,7 @@ def add_modules(mod, mean, std, img, layers, device):
     return model, {'style': style_losses, 'content': content_losses}
 
 
-def run(model, img, num_steps, weights, losses):
+def run(model, img, num_steps, weights, losses, sched):
     """
     Run the Gatys et al. algorithm.
     """
@@ -107,7 +110,7 @@ def run(model, img, num_steps, weights, losses):
     optimizer = optim.LBFGS([img['input'].requires_grad_()])
 
     # Set a decaying learning rate
-    scheduler = StepLR(optimizer, step_size=50, gamma=0.3)
+    scheduler = StepLR(optimizer, step_size=sched['step_size'], gamma=sched['gamma'])
 
     # Save the scores
     style_scores = []
@@ -120,13 +123,14 @@ def run(model, img, num_steps, weights, losses):
             # Steps in the scheduler
             scheduler.step()
 
-            # Limits the values of the updates image
+            # Limits the values of the updated image
             img['input'].data.clamp_(0, 1)
 
             # Reset the gradients to zero before the backpropagation
             optimizer.zero_grad()
             model(img['input'])
 
+            # Calculate the scores
             style_score = 0
             content_score = 0
 
@@ -139,25 +143,27 @@ def run(model, img, num_steps, weights, losses):
             style_score *= weights['style']
             content_score *= weights['content']
 
-            style_scores.append(style_score)
-            content_scores.append(content_score)
+            style_scores.append(style_score.item())
+            content_scores.append(content_score.item())
 
+            # Calculate the total loss and backpropagate it
             loss = style_score + content_score
             loss.backward()
 
             run[0] += 1
 
-            step = int((run[0] / (num_steps)) * 50)
+            step = int((run[0] / (num_steps + (num_steps % 20))) * 50)
             print('[Progress : {}/{}] [{}{}]'.format(
                 str(run[0]).rjust(len(str((num_steps)))),
-                (num_steps),
+                (num_steps + (num_steps % 20)),
                 '=' * step, ' ' * (50 - step)
             ), end='\r')
 
-            return content_score + style_score
+            return style_score + content_score
 
         optimizer.step(closure)
 
+    # Small correction to the image
     img['input'].data.clamp_(0, 1)
 
     return img['input'], style_scores, content_scores
