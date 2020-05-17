@@ -13,16 +13,10 @@ The different techniques used are :
 
 The different techniques have been implemented in **python** (version 3) mainly via the [PyTorch](https://pytorch.org) library.
 
-To create the necessary anaconda virtual environment, do
+To create the necessary anaconda virtual environment (named *neural_style_transfer*), do
 
 ```bash
 make create-env
-```
-
-and to activate it, do
-
-```bash
-make activate-env
 ```
 
 or create the environment manually via the `environment.yml` file provided.

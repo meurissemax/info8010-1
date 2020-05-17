@@ -4,7 +4,7 @@
 #
 #SBATCH --job-name=gatys               # Name of the job 
 #SBATCH --export=ALL                   # Export all environment variables
-#SBATCH --output=mmeurisse-gatys.log   # Log-file (important!)
+#SBATCH --output=gatys.log             # Log-file (important!)
 #SBATCH --gres=gpu:1                   # Number of GPU's (per node)
 #SBATCH --cpus-per-task=2              # CPU cores/threads
 #SBATCH --mem=16G                      # Memory (per node)
