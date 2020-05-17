@@ -30,14 +30,6 @@ cycle-gan:
 create-env:
 	conda env create -f environment.yml
 
-# Activate the anaconda environment
-activate-env:
-	conda activate neural_style_transfer
-
-# Deactivate the anaconda environment
-deactivate-env:
-	conda deactivate
-
 
 ############
 # Cleaning #

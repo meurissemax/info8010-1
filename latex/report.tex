@@ -218,9 +218,17 @@
     
     Concerning generator architectures, authors of CycleGAN use architecture from Johnson et al. \cite{DBLP:journals/corr/JohnsonAL16} : 6 residual blocks for $128 \times 128$ training images and 9 residual blocks for $256 \times 256$ or higher-resolution training images.\\
     
-    Concerning the discriminator architectures, they use a $70 \times 70$ PatchGAN.\\
+    Concerning the discriminator architectures, they use a $70 \times 70$ PatchGAN.
     
-    {\bf à compléter/adapter selon ce que l'on implémentera}
+    \subsubsection{Implementation}
+    
+    In order to implement the CycleGAN, we decided to not base ourselves upon a tutorial but instead to try to recreate the models and its training from the paper \cite{DBLP:journals/corr/ZhuPIE17} itself. The network architecture is referenced in the fourth section of this paper and makes reference to the network used in another paper \cite{DBLP:journals/corr/JohnsonAL16}. The exact architecture of the networks of this paper being given in the supplementary and using the discriminator architecture of \cite{DBLP:journals/corr/LedigTHCATTWS16}. We therefore tried to implement our network based on these sources and finished doing so before realizing that the exact architectures of CycleGan were given in the appendix of their paper, located after the sources. We thus used that source to modify the networks created to have the same basis as them. For the generator, we did not modify anything since the architecture we used and modified based on their comment in their own implementation was the same as the one provided in their appendix. For the discriminators, however, we had to modify our architecture since they did not mention that the kernel sizes were of 4, and so we went with the kernel size of 3 referenced by the original paper they based upon, and they used a stride of 2 for all layers, which was not the case in \cite{DBLP:journals/corr/LedigTHCATTWS16}. The number of blocks they used also differed.\\
+    
+    Finally, after having implemented the network, we went to their GitHub repository for the paper and compared our architecture and theirs, to make sure everything was correct. The only modification we had to make was change some reflection padding to simple padding with 0. They mentioned in their paper they used reflection padding to reduce artifacts but it was not done for all convolutional layers, so we modified that.\\
+    
+    After the network architectures, we had to acquire a dataset of images and paintings. To do so, we used a bash script found on their GitHub repository that downloads the same datasets as they used in their research. We decided to use landscapes and Monet paintings for the two domains of interest. We also had to create a custom data loader that would return an image of both domain when called, and to do so we looked into PyTorch documentation and StackOverflow questions.\\
+    
+    For the optimizer, we reused the same as the authors, and created a learning rate scheduler based on what they wrote in their paper.
     
     %%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%
