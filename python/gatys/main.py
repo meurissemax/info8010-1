@@ -56,19 +56,19 @@ num_steps = 300
 weights = {
     'style': 1_000_000,
     'content': 10,
-    'style_losses': [0.75, 0.5, 0.2, 0.2, 0.2],
+    'style_losses': [1, 0.8, 0.6, 0.4, 0.2],
     'content_losses': [1]
 }
 
 # Layers
 layers = {
-    'style': ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5'],
-    'content': ['conv_4']
+    'style': ['conv_1', 'conv_3', 'conv_5', 'conv_9', 'conv_13'],
+    'content': ['conv_10']
 }
 
 # Flag to control the replacement of the
 # MaxPool2d layers by AvgPool2d layers
-replace_max_to_avg = False
+replace_max_to_avg = True
 
 # Scheduler
 scheduler = {
@@ -158,8 +158,8 @@ if __name__ == '__main__':
                 'content': img_load(content, img_size, device)
             }
 
-            # Create the input image (noisy content image)
-            img['input'] = torch.randn(img['content'].data.size(), device=device)
+            # Create the input image
+            img['input'] = img['content'].clone()
 
             # Print information
             print('Running the algorithm...')
