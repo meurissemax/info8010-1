@@ -1,6 +1,8 @@
-# Deep learning
+# Neural style transfer
 
 The goal of this project is to use different deep learning techniques in order to merge the style of one image and the content of another image (*neural style transfer*).
+
+![Neural style transfer](resources/png/results.png)
 
 ## Techniques
 
