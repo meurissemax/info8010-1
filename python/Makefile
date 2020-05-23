@@ -9,19 +9,6 @@
 #     - Adrien Schoffeniels
 #     - Valentin Vermeylen
 
-##############
-# Techniques #
-##############
-
-# Run the Gatys et al. technique
-gatys:
-	python gatys/main.py
-
-# Run the Cycle GAN technique
-cycle-gan:
-	python cycle-gan/main.py
-
-
 ###############
 # Environment #
 ###############

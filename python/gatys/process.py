@@ -33,6 +33,15 @@ from losses import ContentLoss, StyleLoss
 def add_modules(cnn, mean, std, img, layers, device, replace=False):
     """
     Modifiy the model to integrate new modules.
+
+    Inputs
+    ------
+    - cnn     : a convolutional neurak network (nn.Module)
+    - mean    : the mean normalization vector
+    - std     : the standard deviation normalization vector
+    - img     : a dictionary with content and style image
+    - layers  : a dictionary with lists of content and style layers to add
+    - replace : a flag to determine if we have to replace MaxPool by AvgPool
     """
 
     # Copy the CNN
@@ -104,6 +113,16 @@ def add_modules(cnn, mean, std, img, layers, device, replace=False):
 def run(model, img, num_steps, weights, losses, sched):
     """
     Run the Gatys et al. algorithm.
+
+    Inputs
+    ------
+
+    - model     : the model to use
+    - img       : a dictionary with images (here, only input image)
+    - num_steps : the number of steps (epochs)
+    - weights   : a dictionary with weights for content and style layers
+    - losses    : a dictionary with lists of content and style layers
+    - sched     : a dictionary with scheduler parameter
     """
 
     # Adds the input image to the gradient descent
