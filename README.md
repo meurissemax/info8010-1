@@ -26,10 +26,8 @@ or create the environment manually via the `environment.yml` file provided.
 To use a technique, make sure to activate the virtual environment and do
 
 ```bash
-make <technique-name>
+python python/<technique-name>/main.py
 ```
-
-or manually run the `main.py` file located in the `python/<technique-name>/` folder.
 
 Each hyperparameter of a technique can be modified via the corresponding `main.py` file.
 
