@@ -40,3 +40,7 @@ This project was realized as part of the *Deep learning* course given by Profess
 * **Maxime Meurisse** - [meurissemax](https://github.com/meurissemax)
 * **Adrien Schoffeniels** - [schoffeniels](https://github.com/schoffeniels)
 * **Valentin Vermeylen** - [ValentinVermeylen](https://github.com/ValentinVermeylen)
+
+## Score
+
+* This project received a score of **17/20**.
